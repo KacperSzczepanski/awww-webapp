@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type ="text/css" href="{% static 'registration/style.css' %}">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+
+    <style>
+      :root {
+        --bg: rgba(14, 21, 37, 255);
+        --panel: rgba(29, 35, 51, 255);
+        --button: rgba(38, 43, 59, 255);
+        --button-focus: rgba(32, 171, 70, 255);
+      }
+
+      body {
+        background-color: var(--bg);
+        height: 100vh;
+        color: white;
+        padding: 0 0 5px;
+        margin: 0;
+        font-family: 'Lato', sans-serif;
+      }
+
+      .center {
+        width: 400px;
+        margin: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h2 class="center">Sign up</h2>
+    <form method="post" class="center">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Sign Up</button>
+    </form>
+  </body>
+</html>

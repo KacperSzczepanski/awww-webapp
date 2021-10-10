@@ -1,0 +1,176 @@
+:root {
+    --bg: rgba(14, 21, 37, 255);
+    --panel: rgba(29, 35, 51, 255);
+    --button: rgba(38, 43, 59, 255);
+    --button-focus: rgba(32, 171, 70, 255);
+}
+
+ul {
+    list-style-type: none;
+    padding-left: 10px;
+}
+
+.preformatted {
+    font-size: 15px;
+    font-family: 'Lato', sans-serif;
+}
+
+.preformatted-hover:hover {
+    color: green;
+    cursor: pointer;
+}
+
+a {
+    text-decoration: none;
+    color: white;
+}
+
+.btn {
+    display: inline-block;
+    background-color: var(--button);
+    height: 30px;
+    width: 110px;
+    border-radius: 10px;
+    margin: auto;
+    text-align: center;
+}
+
+.hello {
+    display: inline-block;
+    height: 30px;
+    width: 110px;
+    border-radius: 10px;
+    margin: auto;
+    text-align: center;
+}
+
+.btn:hover {
+    background-color: var(--button-focus);
+    cursor: pointer;
+}
+
+body {
+    background-color: var(--bg);
+    height: 100vh;
+    color: white;
+    padding: 0 0 5px;
+    margin: 0;
+    font-family: 'Lato', sans-serif;
+}
+
+.navbar-grid {
+    display: grid;
+    background-color: var(--panel);
+    grid-template-columns: auto auto auto auto auto;
+    width: 100%;
+    height: 40px;
+}
+
+.panels-grid-container {
+    display: grid;
+    background-color: var(--bg);
+    grid-template-columns: 25% 50% 25%;
+    grid-template-rows: 33% 34% 33%;
+    height: calc(99% + -40px);
+    padding: 5px;
+    position: relative;
+}
+
+.panels-grid-container>div {
+    margin: 5px;
+}
+
+.fileSelector {
+    grid-row: 1 / 4;
+    background-color: var(--panel);
+    padding: 10px;
+    border-radius: 5px;
+    overflow-y: auto;
+}
+
+.textField {
+    grid-row: 1 / 3;
+    background-color: var(--panel);
+    padding: 10px;
+    border-radius: 5px;
+    overflow-y: auto;
+}
+
+.focusElements {
+    grid-row: 1 / 3;
+    background-color: var(--panel);
+    padding: 10px;
+    border-radius: 5px;
+    overflow-y: auto;
+}
+
+.tabs {
+    grid-column: 2 / 4;
+    padding: 0;
+    position: relative;
+}
+
+.tabsSelector {
+    height: 20px;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    text-align: center;
+}
+
+.tabsContainer {
+    background-color: var(--panel);
+    height: calc(100% + -40px);
+    width: calc(100% + -20px);
+    border-radius: 0 5px 5px 5px;
+    padding: 10px;
+    position: absolute;
+    bottom: 0;
+    overflow-y: auto;
+}
+
+.tab-grid-container {
+    display: grid;
+    grid-template-rows: 100%;
+    grid-template-columns: auto auto auto auto auto auto auto auto auto auto;
+    grid-column-gap: 5px;
+}
+
+.tab {
+    background-color: var(--panel);
+    border-radius: 5px 5px 0 0;
+    padding: 3px;
+    overflow: hidden;
+}
+
+.center {
+    width: 400px;
+    margin: auto;
+}
+
+@media screen and (max-width: 576px) {
+    .panels-grid-container {
+        height: 800px;
+        grid-template-columns: 100%;
+        grid-template-rows: 20% 20% 40% 20%;
+    }
+    .fileSelector {
+        grid-row: 1 / 2;
+    }
+    .textField {
+        grid-row: 3 / 4;
+    }
+    .focusElements {
+        grid-row: 2 / 3;
+    }
+    .tabs {
+        grid-row: 4 / 5;
+        grid-column: 1 / 2;
+    }
+    body {
+        --bg: rgba(238, 238, 238, 255);
+        --panel: rgba(255, 255, 254, 255);
+        --button: rgba(243, 243, 243, 255);
+        color: black;
+    }
+}

@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type ="text/css" href="{% static 'utils/style.css' %}">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <title>Webapp</title>
+</head>
+
+<body>
+    <li> <pre><span id="{{ currentDir.id }}" class="preformatted preformatted-hover dir-listed">{{ currentDir.name }}/</span></pre>
+        {% for dir in directories %}
+            {% if dir.owner == user and dir.availability_flag == True and dir.parent_dir == currentDir %}
+            <ul>
+                {% with currentDir=dir template_name="utils/recursive.html"%}
+                    {% include template_name %}
+                {% endwith %}
+            </ul>
+            {% endif %}
+        {% endfor %}
+        {% for file in files %}
+            {% if file.owner == user and file.availability_flag == True and file.parent_dir == currentDir %}
+            <ul>
+                <pre><span id="{{ file.id }}" class="preformatted preformatted-hover file-listed" onclick="putInput('{{ file.content.url }}', 'textField')">{{ file.name }}</span></pre>
+            </ul>
+            {% endif %}
+        {% endfor %}
+    </li>
+</body>
+
+</html>

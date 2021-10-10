@@ -1,0 +1,69 @@
+basic -----------------------------------------------
+1) dany jest ciąg liczb dodatnich i ujemnych
+
+chcemy policzyć największą możliwą sumę ze wszystkich możliwych przedziałów
+
+możemy się przeiterować po ciągu tylko raz
+
+2) dany jest hotel o 1000 piętrach, dostałeś już klucz do pokoju na piętrze x
+
+w windzie zorientowałeś się, że liczby na guzikach się starły, a że jest ich dużo, to nie umiesz określić który prowadzi na które piętro
+
+jak dojedziesz na któreś piętro to widzisz na ścianie numer piętra, czy to jest to, za wysoko, za nisko
+
+nie chcąc marnować prądu, czasu i energii chcesz jak najszybciej znaleźć swoje piętro
+
+ile minimalnie kursów windą musisz wykonać?
+
+dynamiki -----------------------------------------------
+1) masz kryształy rozmiaru 1 i 3, masz pudełko rozmiaru 8
+
+na ile sposobów możemy umieścić krzyształy w pudełku?
+
+na ile posobów możemy to zrobić dla rozmiaru 1000?
+
+a dla rozmiaru n?
+
+2) masz 3 rodzaje pluszaków: misie, pingwiny i słonie
+
+każdego jest tak do 100
+
+na ile sposobów możemy je ułożyć w rządku tak, żeby obok siebie nie stały 2 takie same?
+
+3) policz liczbę triangulacji w n-kącie wypukłym
+
+zachłany ------------------------------------------------------
+
+1) mamy sobie n butelek z sokiem, każda ma a_i pojemności i b_i soku w środku
+
+czy można przelać sok do dokładnie dwóch butelek tak, że obydwie są w pełni wykorzystane a wszystkie pozostałe są puste?
+jak tak to podać ich numery
+
+2) mamy sobie n samolotów, tak 200k, każdy ma ustalony moment odlotu z lotniska t (któraś minuta) i priorytet p
+
+z powodu awarii w systemie niektóre loty mają ustawiony czas startu z lotniska na ten sam
+
+awaria trwa k minut i przez dokładnie tyle pierwszych minut samoloty nie mogą wylatywać (mogą od k+1)
+
+napisać program zastępczy, który ustawi loty tak, że żadne 2 nie wylecą w tym samym momencie (ani wcześniej niż zaplanowano),
+dopiero od k+1 momentu i łączna kara będzie minimalna, gdzie kara za samolot to (czas odlotu - zaplanowany czas odlotu) * p
+
+grafy -----------------------------------------------------------
+
+1) sprawdzić, czy graf można pokolorować dwoma kolorami tak, że żadne 2 sąsiednie wierzchołki nie mają takiego samego koloru
+
+2) znaleźć centroid w drzewie
+
+drzewa przedziałowe --------------------------------------------------
+
+1) tetris 2d: mamy prostokątne klocki i planszę rozmiaru do miliona
+
+możemy w dowolnym momencie dorzucić nowy klocek
+
+odpowiedzieć na zapytanie jaka jest największa wysokość na którym skończył jakiś klocek
+
+2) mamy dany ciąg liczb nie większych niż 10^9, ciąg nie dłuższy niż 10^5
+
+możemy zmieniać dowolne elementy w ciągu na inne
+
+w dowolnym momencie mamy odpowiedzieć jaka jest długość największego rosnącego spójnego przedziału

@@ -1,0 +1,220 @@
+diff -rupNEZbB OriginalSources/usr/include/minix/callnr.h Sources/usr/include/minix/callnr.h
+--- OriginalSources/usr/include/minix/callnr.h	2014-09-14 11:00:44.000000000 +0200
++++ Sources/usr/include/minix/callnr.h	2021-04-28 12:06:39.504128292 +0200
+@@ -58,8 +58,9 @@
+ #define PM_GETEPINFO		(PM_BASE + 45)
+ #define PM_GETPROCNR		(PM_BASE + 46)
+ #define PM_GETSYSINFO		(PM_BASE + 47)
++#define PM_NEGATEEXIT       (PM_BASE + 48)
+ 
+-#define NR_PM_CALLS		48	/* highest number from base plus one */
++#define NR_PM_CALLS		49	/* highest number from base plus one */
+ 
+ /*===========================================================================*
+  *				Calls to VFS				     *
+diff -rupNEZbB OriginalSources/usr/include/minix/ipc.h Sources/usr/include/minix/ipc.h
+--- OriginalSources/usr/include/minix/ipc.h	2014-09-14 11:00:44.000000000 +0200
++++ Sources/usr/include/minix/ipc.h	2021-04-28 15:28:02.404892283 +0200
+@@ -14,6 +14,12 @@
+ #define M_PATH_STRING_MAX  40
+ 
+ typedef struct {
++	int negate;
++	uint8_t padding[52];
++} mess_negate;
++_ASSERT_MSG_SIZE(mess_negate);
++
++typedef struct {
+ 	uint8_t data[56];
+ } mess_u8;
+ _ASSERT_MSG_SIZE(mess_u8);
+@@ -2027,6 +2033,7 @@ typedef struct {
+ 	endpoint_t m_source;		/* who sent the message */
+ 	int m_type;			/* what kind of message is it */
+ 	union {
++		mess_negate		m_negate;
+ 		mess_u8			m_u8;
+ 		mess_u16		m_u16;
+ 		mess_u32		m_u32;
+diff -rupNEZbB OriginalSources/usr/include/unistd.h Sources/usr/include/unistd.h
+--- OriginalSources/usr/include/unistd.h	2014-09-14 11:00:42.000000000 +0200
++++ Sources/usr/include/unistd.h	2021-04-28 12:29:12.006147549 +0200
+@@ -100,6 +100,7 @@ size_t	 confstr(int, char *, size_t);
+ /* also declared in stdio.h */
+ char	*cuserid(char *);	/* obsolete */
+ #endif /* __CUSERID_DECLARED */
++int  negateexit(int);
+ int	 dup(int);
+ int	 dup2(int, int);
+ int	 execl(const char *, const char *, ...);
+diff -rupNEZbB OriginalSources/usr/src/include/unistd.h Sources/usr/src/include/unistd.h
+--- OriginalSources/usr/src/include/unistd.h	2014-09-13 23:56:50.000000000 +0200
++++ Sources/usr/src/include/unistd.h	2021-04-28 12:27:46.219169209 +0200
+@@ -100,6 +100,7 @@ size_t	 confstr(int, char *, size_t);
+ /* also declared in stdio.h */
+ char	*cuserid(char *);	/* obsolete */
+ #endif /* __CUSERID_DECLARED */
++int  negateexit(int);
+ int	 dup(int);
+ int	 dup2(int, int);
+ int	 execl(const char *, const char *, ...);
+diff -rupNEZbB OriginalSources/usr/src/lib/libc/misc/Makefile.inc Sources/usr/src/lib/libc/misc/Makefile.inc
+--- OriginalSources/usr/src/lib/libc/misc/Makefile.inc	2014-09-13 23:56:50.000000000 +0200
++++ Sources/usr/src/lib/libc/misc/Makefile.inc	2021-04-28 15:31:24.681424931 +0200
+@@ -8,3 +8,6 @@ SRCS+=	initfini.c
+ 
+ # for -fstack-protector
+ SRCS+=	stack_protector.c
++
++# negateexit
++SRCS+=  negateexit.c
+\ Brak znaku nowej linii na końcu pliku
+diff -rupNEZbB OriginalSources/usr/src/lib/libc/misc/negateexit.c Sources/usr/src/lib/libc/misc/negateexit.c
+--- OriginalSources/usr/src/lib/libc/misc/negateexit.c	1970-01-01 01:00:00.000000000 +0100
++++ Sources/usr/src/lib/libc/misc/negateexit.c	2021-04-28 18:15:39.948665026 +0200
+@@ -0,0 +1,16 @@
++#include <unistd.h>
++#include <sys/types.h>
++#include <lib.h>
++#include <stdlib.h>
++
++int negateexit(int negate) {
++    message m;
++    m.m_negate.negate = negate;
++
++    if (_syscall(PM_PROC_NR, PM_NEGATEEXIT, &m) != 0) {
++        errno = ENOSYS;
++        return -1;
++    }
++
++    return m.m_negate.negate;
++}
+\ Brak znaku nowej linii na końcu pliku
+diff -rupNEZbB OriginalSources/usr/src/minix/include/minix/callnr.h Sources/usr/src/minix/include/minix/callnr.h
+--- OriginalSources/usr/src/minix/include/minix/callnr.h	2014-09-13 23:56:50.000000000 +0200
++++ Sources/usr/src/minix/include/minix/callnr.h	2021-04-28 12:10:59.121246842 +0200
+@@ -58,8 +58,9 @@
+ #define PM_GETEPINFO		(PM_BASE + 45)
+ #define PM_GETPROCNR		(PM_BASE + 46)
+ #define PM_GETSYSINFO		(PM_BASE + 47)
++#define PM_NEGATEEXIT       (PM_BASE + 48)
+ 
+-#define NR_PM_CALLS		48	/* highest number from base plus one */
++#define NR_PM_CALLS		49	/* highest number from base plus one */
+ 
+ /*===========================================================================*
+  *				Calls to VFS				     *
+diff -rupNEZbB OriginalSources/usr/src/minix/include/minix/ipc.h Sources/usr/src/minix/include/minix/ipc.h
+--- OriginalSources/usr/src/minix/include/minix/ipc.h	2014-09-13 23:56:50.000000000 +0200
++++ Sources/usr/src/minix/include/minix/ipc.h	2021-04-28 15:44:55.043639315 +0200
+@@ -14,6 +14,12 @@
+ #define M_PATH_STRING_MAX  40
+ 
+ typedef struct {
++	int negate;
++	uint8_t padding[52];
++} mess_negate;
++_ASSERT_MSG_SIZE(mess_negate);
++
++typedef struct {
+ 	uint8_t data[56];
+ } mess_u8;
+ _ASSERT_MSG_SIZE(mess_u8);
+@@ -2027,6 +2033,7 @@ typedef struct {
+ 	endpoint_t m_source;		/* who sent the message */
+ 	int m_type;			/* what kind of message is it */
+ 	union {
++		mess_negate		m_negate;
+ 		mess_u8			m_u8;
+ 		mess_u16		m_u16;
+ 		mess_u32		m_u32;
+diff -rupNEZbB OriginalSources/usr/src/minix/servers/pm/forkexit.c Sources/usr/src/minix/servers/pm/forkexit.c
+--- OriginalSources/usr/src/minix/servers/pm/forkexit.c	2014-09-13 23:56:50.000000000 +0200
++++ Sources/usr/src/minix/servers/pm/forkexit.c	2021-04-28 16:16:04.084548832 +0200
+@@ -241,7 +241,11 @@ int do_exit()
+       sys_kill(mp->mp_endpoint, SIGKILL);
+   }
+   else {
++      if (mp->negate == 0) {
+       exit_proc(mp, m_in.m_lc_pm_exit.status, FALSE /*dump_core*/);
++      } else {
++        exit_proc(mp, !m_in.m_lc_pm_exit.status, FALSE /*dump_core*/);
++      }
+   }
+   return(SUSPEND);		/* can't communicate from beyond the grave */
+ }
+diff -rupNEZbB OriginalSources/usr/src/minix/servers/pm/main.c Sources/usr/src/minix/servers/pm/main.c
+--- OriginalSources/usr/src/minix/servers/pm/main.c	2014-09-13 23:56:50.000000000 +0200
++++ Sources/usr/src/minix/servers/pm/main.c	2021-04-28 16:31:13.971102765 +0200
+@@ -147,6 +147,7 @@ static int sef_cb_init_fresh(int UNUSED(
+   for (rmp=&mproc[0]; rmp<&mproc[NR_PROCS]; rmp++) {
+ 	init_timer(&rmp->mp_timer);
+ 	rmp->mp_magic = MP_MAGIC;
++	rmp->negate = 0;
+   }
+ 
+   /* Build the set of signals which cause core dumps, and the set of signals
+diff -rupNEZbB OriginalSources/usr/src/minix/servers/pm/Makefile Sources/usr/src/minix/servers/pm/Makefile
+--- OriginalSources/usr/src/minix/servers/pm/Makefile	2014-09-13 23:56:50.000000000 +0200
++++ Sources/usr/src/minix/servers/pm/Makefile	2021-04-28 16:31:39.761213367 +0200
+@@ -4,7 +4,7 @@
+ PROG=	pm
+ SRCS=	main.c forkexit.c exec.c time.c alarm.c \
+ 	signal.c utility.c table.c trace.c getset.c misc.c \
+-	profile.c mcontext.c schedule.c
++	profile.c mcontext.c schedule.c negateexit.c
+ 
+ DPADD+=	${LIBSYS} ${LIBTIMERS}
+ LDADD+=	-lsys -ltimers
+diff -rupNEZbB OriginalSources/usr/src/minix/servers/pm/mproc.h Sources/usr/src/minix/servers/pm/mproc.h
+--- OriginalSources/usr/src/minix/servers/pm/mproc.h	2014-09-13 23:56:50.000000000 +0200
++++ Sources/usr/src/minix/servers/pm/mproc.h	2021-04-28 16:32:08.043527847 +0200
+@@ -14,6 +14,8 @@
+ #include "const.h"
+ 
+ EXTERN struct mproc {
++  int negate;           /*negate exit flag*/
++
+   char mp_exitstatus;		/* storage for status when process exits */
+   char mp_sigstatus;		/* storage for signal # for killed procs */
+   pid_t mp_pid;			/* process id */
+diff -rupNEZbB OriginalSources/usr/src/minix/servers/pm/negateexit.c Sources/usr/src/minix/servers/pm/negateexit.c
+--- OriginalSources/usr/src/minix/servers/pm/negateexit.c	1970-01-01 01:00:00.000000000 +0100
++++ Sources/usr/src/minix/servers/pm/negateexit.c	2021-04-28 18:16:11.727266463 +0200
+@@ -0,0 +1,13 @@
++#include "pm.h"
++#include "mproc.h"
++#include "proto.h"
++
++int do_negateexit(void) {
++    int previous = mp->negate;
++
++    mp->negate = (m_in.m_negate.negate != 0 ? 1 : 0);
++
++    mp->mp_reply.m_negate.negate = previous;
++
++    return OK;
++}
+\ Brak znaku nowej linii na końcu pliku
+diff -rupNEZbB OriginalSources/usr/src/minix/servers/pm/proto.h Sources/usr/src/minix/servers/pm/proto.h
+--- OriginalSources/usr/src/minix/servers/pm/proto.h	2014-09-13 23:56:50.000000000 +0200
++++ Sources/usr/src/minix/servers/pm/proto.h	2021-04-28 17:34:20.165612131 +0200
+@@ -89,3 +89,6 @@ struct mproc *find_proc(pid_t lpid);
+ int nice_to_priority(int nice, unsigned *new_q);
+ int pm_isokendpt(int ep, int *proc);
+ void tell_vfs(struct mproc *rmp, message *m_ptr);
++
++/* negateexit.c */
++int do_negateexit(void);
+\ Brak znaku nowej linii na końcu pliku
+diff -rupNEZbB OriginalSources/usr/src/minix/servers/pm/table.c Sources/usr/src/minix/servers/pm/table.c
+--- OriginalSources/usr/src/minix/servers/pm/table.c	2014-09-13 23:56:50.000000000 +0200
++++ Sources/usr/src/minix/servers/pm/table.c	2021-04-28 16:37:03.203678270 +0200
+@@ -58,5 +58,6 @@ int (* const call_vec[NR_PM_CALLS])(void
+ 	CALL(PM_EXEC_RESTART)	= do_execrestart,
+ 	CALL(PM_GETEPINFO)	= do_getepinfo,		/* getepinfo(2) */
+ 	CALL(PM_GETPROCNR)	= do_getprocnr,		/* getprocnr(2) */
+-	CALL(PM_GETSYSINFO)	= do_getsysinfo		/* getsysinfo(2) */
++	CALL(PM_GETSYSINFO)	= do_getsysinfo,		/* getsysinfo(2) */
++	CALL(PM_NEGATEEXIT) = do_negateexit
+ };
